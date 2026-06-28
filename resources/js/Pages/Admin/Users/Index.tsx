@@ -8,7 +8,7 @@ import { Badge } from '@/Components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Card } from '@/Components/ui/card';
 import { useState } from 'react';
-import { ALL_USER_ROLES, getRoleLabel, isAdminManagedPublicRole, type UserRole } from '@/lib/roles';
+import { PORTAL_USER_ROLES, getRoleLabel, isAdminManagedPublicRole, type UserRole } from '@/lib/roles';
 import type { CimsUser } from '@/types/cims';
 
 export default function Index({ users }: { users: CimsUser[] }) {
@@ -38,7 +38,7 @@ export default function Index({ users }: { users: CimsUser[] }) {
                 filters={[{
                     key: 'role',
                     label: 'Role',
-                    options: ALL_USER_ROLES.map((r) => ({ value: r, label: getRoleLabel(r) })),
+                    options: PORTAL_USER_ROLES.filter((r) => r !== 'super_admin').map((r) => ({ value: r, label: getRoleLabel(r) })),
                 }]}
                 className="mt-6"
             />

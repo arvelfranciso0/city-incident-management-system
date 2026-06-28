@@ -3,6 +3,7 @@ import {
     IconClipboardList,
     IconDashboard,
     IconFileReport,
+    IconLogout,
     IconSettings,
     IconUser,
 } from '@tabler/icons-react';
@@ -16,6 +17,7 @@ const navItems = [
     { href: route('citizen.notifications'), label: 'Notifications', icon: <IconBell className="size-4" />, exact: true },
     { href: route('citizen.profile'), label: 'Profile', icon: <IconUser className="size-4" />, exact: true },
     { href: route('citizen.settings'), label: 'Settings', icon: <IconSettings className="size-4" />, exact: true },
+    { href: route('logout'), label: 'Log out', icon: <IconLogout className="size-4" />, method: 'post' as const, exact: true },
 ];
 
 export default function CitizenLayout({
@@ -36,7 +38,7 @@ export default function CitizenLayout({
             userMenuLinks={[
                 { href: route('citizen.profile'), label: 'Profile' },
                 { href: route('citizen.settings'), label: 'Settings' },
-                { href: route('logout'), label: 'Log out' },
+                { href: route('logout'), label: 'Log out', method: 'post' },
             ]}
         >
             {children}

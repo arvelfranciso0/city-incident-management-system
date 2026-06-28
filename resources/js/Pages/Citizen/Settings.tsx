@@ -4,6 +4,7 @@ import { PageHeader } from '@/Components/cims/PageHeader';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
+import { PasswordInput } from '@/Components/ui/password-input';
 import { Label } from '@/Components/ui/label';
 import { Switch } from '@/Components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
@@ -31,9 +32,9 @@ export default function Settings() {
                 </TabsContent>
                 <TabsContent value="password">
                     <Card><CardHeader><CardTitle>Change Password</CardTitle></CardHeader><CardContent className="max-w-md space-y-4">
-                        <div className="space-y-2"><Label>Current Password</Label><Input type="password" /></div>
-                        <div className="space-y-2"><Label>New Password</Label><Input type="password" /></div>
-                        <div className="space-y-2"><Label>Confirm Password</Label><Input type="password" /></div>
+                        <div className="space-y-2"><Label>Current Password</Label><PasswordInput autoComplete="current-password" /></div>
+                        <div className="space-y-2"><Label>New Password</Label><PasswordInput autoComplete="new-password" /></div>
+                        <div className="space-y-2"><Label>Confirm Password</Label><PasswordInput autoComplete="new-password" /></div>
                         <Button onClick={() => setSaved(true)}>Update Password</Button>
                     </CardContent></Card>
                 </TabsContent>

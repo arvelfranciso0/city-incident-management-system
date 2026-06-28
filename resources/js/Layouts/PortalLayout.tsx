@@ -21,7 +21,7 @@ interface PortalLayoutProps {
     navItems: NavItem[];
     notifications?: Notification[];
     notificationsHref?: string;
-    userMenuLinks: { href: string; label: string }[];
+    userMenuLinks: { href: string; label: string; method?: 'get' | 'post' }[];
     accent?: 'citizen' | 'staff' | 'admin';
 }
 
@@ -37,11 +37,14 @@ function SidebarNav({ items, onNavigate }: { items: NavItem[]; onNavigate?: () =
                     toPath(activeHref) === toPath(item.href);
                 return (
                     <Link
-                        key={item.href}
+                        key={`${item.href}-${item.label}`}
                         href={item.href}
+                        method={item.method ?? 'get'}
+                        as={item.method === 'post' ? 'button' : undefined}
                         onClick={onNavigate}
                         className={cn(
-                            'flex items-center gap-3 rounded-lg py-2 text-sm transition-colors',
+                            'flex w-full items-center gap-3 rounded-lg py-2 text-sm transition-colors',
+                            item.method === 'post' ? 'text-left' : '',
                             portalNavLinkClass(active),
                         )}
                         aria-current={active ? 'page' : undefined}

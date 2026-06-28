@@ -37,7 +37,7 @@ export interface Notification {
     type: string;
 }
 
-export type UserRole = 'admin' | 'staff' | 'citizen' | 'guest';
+export type UserRole = 'super_admin' | 'admin' | 'staff' | 'citizen' | 'guest';
 
 export interface CimsUser {
     id: number;
@@ -125,4 +125,57 @@ export interface ChartData {
     labels: string[];
     incidents: number[];
     resolved: number[];
+}
+
+export interface PlatformAdminUser {
+    id: number;
+    name: string;
+    email: string;
+    status: string;
+    lastLogin?: string | null;
+    joinedAt?: string | null;
+}
+
+export interface PlatformOrganization {
+    id: number;
+    name: string;
+    slug: string;
+    subdomain?: string | null;
+    domain?: string | null;
+    customDomain?: string | null;
+    tenantHost?: string | null;
+    publicUrl?: string;
+    supportEmail?: string | null;
+    supportPhone?: string | null;
+    isActive: boolean;
+    subscriptionPlan: string;
+    subscriptionStatus: string;
+    subscribedAt?: string | null;
+    trialEndsAt?: string | null;
+    createdAt?: string | null;
+    usersCount: number;
+    incidentsCount: number;
+    departmentsCount: number;
+    admin?: PlatformAdminUser | null;
+}
+
+export interface PlatformAdminWithOrg extends PlatformAdminUser {
+    organization?: {
+        id: number;
+        name: string;
+        slug: string;
+    } | null;
+}
+
+export interface TenantOrganization {
+    id: number;
+    name: string;
+    slug: string;
+    subdomain?: string | null;
+    domain?: string | null;
+    customDomain?: string | null;
+    tenantHost?: string | null;
+    supportEmail?: string | null;
+    supportPhone?: string | null;
+    publicUrl?: string;
 }

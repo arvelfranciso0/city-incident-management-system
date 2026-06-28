@@ -97,4 +97,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+    public function homeRouteName(): string
+    {
+        return $this->role?->homeRoute() ?? 'public.home';
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === UserRole::SuperAdmin;
+    }
 }

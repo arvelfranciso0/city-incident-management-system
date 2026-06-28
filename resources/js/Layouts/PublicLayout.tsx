@@ -10,6 +10,11 @@ import {
     toPath,
 } from '@/lib/nav';
 import { useState } from 'react';
+import type { TenantOrganization } from '@/types/cims';
+
+interface PublicPageProps {
+    organization?: TenantOrganization | null;
+}
 
 const navLinks = [
     { href: route('public.home'), label: 'Home', exact: true },
@@ -30,7 +35,9 @@ const reportNavLink = {
 };
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-    const { url } = usePage();
+    const { url, props } = usePage<PublicPageProps>();
+    const organization = props.organization;
+    const brandLabel = organization?.name ?? 'CIMS';
     const [open, setOpen] = useState(false);
     const allLinks = [...navLinks, reportNavLink, ...utilityLinks];
     const activeHref = getActiveNavHref(url, allLinks);
@@ -44,7 +51,12 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <nav className="portal-acrylic fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-portal-outline-variant px-6">
                 <Link href={route('public.home')} className="flex items-center gap-3">
                     <IconShield className="size-6 text-portal-primary" stroke={2.5} />
-                    <span className="text-xl font-extrabold tracking-tight text-portal-primary">CIMS</span>
+                    <span className="text-xl font-extrabold tracking-tight text-portal-primary">{brandLabel}</span>
+                    {organization && (
+                        <span className="hidden text-xs font-medium uppercase tracking-wider text-portal-on-surface-variant sm:inline">
+                            Public Portal
+                        </span>
+                    )}
                 </Link>
 
                 <div className="hidden items-center gap-4 md:flex">

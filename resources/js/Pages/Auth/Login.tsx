@@ -32,7 +32,7 @@ export default function Login({
     return (
         <AuthLayout
             title="Sign in"
-            description="Access your citizen portal to track and manage incident reports."
+            description="Sign in to access your portal — Super Admin, Organization Admin, Staff, or Citizen."
         >
             <Head title="Sign in" />
 

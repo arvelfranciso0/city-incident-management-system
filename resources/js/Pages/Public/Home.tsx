@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { PortalSectionHeading, PublicCard, portalInputClass, portalLabelClass, portalPrimaryBtnClass, portalTertiaryBtnClass } from '@/Components/cims/PublicUi';
 import {
@@ -23,7 +23,7 @@ import {
     IconShieldCheck,
 } from '@tabler/icons-react';
 import { useState } from 'react';
-import type { Faq } from '@/types/cims';
+import type { Faq, TenantOrganization } from '@/types/cims';
 
 const HERO_IMAGE =
     'https://lh3.googleusercontent.com/aida-public/AB6AXuAQxpubkgW7CRbGfuw82HW0KMxgRj4mK96f_n2u6ciGSWzyVvxIPKD3rdX9r6pUxFLTSmWjevkqHwPp8mgOT-1ZRtUtKQNaZKIj4HuesfdMfGUZSUGgCLiSVKQ5HuBiFI3ZUQxyji0TSGy2ja1FrGbju4C6QkJkrCRdlGKHmKorNlGan1l2rvvtG94sSLr_QsaR3HQirwNI47yA07Xcb4k7JMgsyeYoAglKYMEEA-koNFZ17X7f5S0ZaNCgj0a8DsGUFz-sbH5v2SM';
@@ -42,6 +42,8 @@ interface Props {
 }
 
 export default function Home({ stats, faqs }: Props) {
+    const { organization } = usePage<{ organization?: TenantOrganization | null }>().props;
+    const cityName = organization?.name ?? 'your community';
     const [trackingNumber, setTrackingNumber] = useState('');
     const [trackError, setTrackError] = useState('');
     const [contactSubmitted, setContactSubmitted] = useState(false);
@@ -83,10 +85,12 @@ export default function Home({ stats, faqs }: Props) {
                 <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-8 px-6 md:grid-cols-2">
                     <div className="space-y-4 text-white">
                         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-[36px] sm:leading-[44px]">
-                            Unified Coordination for Public Safety
+                            {organization ? `Welcome to ${organization.name}` : 'Unified Coordination for Public Safety'}
                         </h1>
                         <p className="max-w-lg text-base leading-relaxed text-portal-surface-container/90 sm:text-lg">
-                            CIMS provides citizens and first responders with a seamless interface to report, track, and manage local incidents in real-time.
+                            {organization
+                                ? `Report, track, and manage incidents in ${cityName} through your official public safety portal.`
+                                : 'CIMS provides citizens and first responders with a seamless interface to report, track, and manage local incidents in real-time.'}
                         </p>
                         <div className="flex flex-wrap gap-4 pt-4">
                             <Button

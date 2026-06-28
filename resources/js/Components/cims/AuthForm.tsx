@@ -1,4 +1,5 @@
 import { Input } from '@/Components/ui/input';
+import { PasswordInput } from '@/Components/ui/password-input';
 import { Label } from '@/Components/ui/label';
 import { portalInputClass, portalLabelClass } from '@/Components/cims/PublicUi';
 import { cn } from '@/lib/utils';
@@ -31,18 +32,32 @@ export function AuthField({
     return (
         <div className={cn('space-y-2', className)}>
             <Label htmlFor={id} className={portalLabelClass}>{label}</Label>
-            <Input
-                id={id}
-                name={id}
-                type={type}
-                value={value}
-                autoComplete={autoComplete}
-                required={required}
-                autoFocus={autoFocus}
-                aria-invalid={!!error}
-                className={portalInputClass}
-                onChange={(e) => onChange(e.target.value)}
-            />
+            {type === 'password' ? (
+                <PasswordInput
+                    id={id}
+                    name={id}
+                    value={value}
+                    autoComplete={autoComplete}
+                    required={required}
+                    autoFocus={autoFocus}
+                    aria-invalid={!!error}
+                    className={portalInputClass}
+                    onChange={(e) => onChange(e.target.value)}
+                />
+            ) : (
+                <Input
+                    id={id}
+                    name={id}
+                    type={type}
+                    value={value}
+                    autoComplete={autoComplete}
+                    required={required}
+                    autoFocus={autoFocus}
+                    aria-invalid={!!error}
+                    className={portalInputClass}
+                    onChange={(e) => onChange(e.target.value)}
+                />
+            )}
             {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
     );
