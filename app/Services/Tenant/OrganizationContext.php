@@ -18,7 +18,7 @@ class OrganizationContext
         $this->organization = null;
     }
 
-    public function has(): bool
+    public function hasOrganization(): bool
     {
         return $this->organization !== null;
     }

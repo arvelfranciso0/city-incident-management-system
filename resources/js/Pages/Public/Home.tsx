@@ -129,7 +129,7 @@ export default function Home({ stats, faqs }: Props) {
                                         setTrackingNumber(e.target.value);
                                         setTrackError('');
                                     }}
-                                    placeholder="e.g. TRK-8F3K2M9P"
+                                    placeholder="e.g. TRK-XXXXXXXX"
                                     className="border-portal-outline-variant bg-white pl-10 uppercase focus-visible:ring-portal-tertiary-container"
                                 />
                             </div>

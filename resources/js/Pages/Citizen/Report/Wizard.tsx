@@ -5,13 +5,15 @@ import { PublicPageShell, portalPrimaryBtnClass } from '@/Components/cims/Public
 import { Button } from '@/Components/ui/button';
 import { IconCheck } from '@tabler/icons-react';
 import { useState } from 'react';
-import type { Category, Notification } from '@/types/cims';
+import type { Category, Notification, Priority } from '@/types/cims';
 
 export default function Wizard({
     categories,
+    priorities,
     notifications,
 }: {
     categories: Category[];
+    priorities: Priority[];
     notifications: Notification[];
 }) {
     const { props } = usePage<{ auth: { user: { name: string; email: string } } }>();
@@ -53,10 +55,11 @@ export default function Wizard({
             >
                 <IncidentReportWizard
                     categories={categories}
+                    priorities={priorities}
                     variant="citizen"
                     initialContact={{
-                        name: user?.name ?? '',
-                        email: user?.email ?? '',
+                        reporter_name: user?.name ?? '',
+                        reporter_email: user?.email ?? '',
                     }}
                     onComplete={(_form: IncidentReportFormData) => setSubmitted(true)}
                 />

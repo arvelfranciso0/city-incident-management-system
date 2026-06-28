@@ -1,16 +1,28 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
-import IncidentReportWizard, { type IncidentReportFormData } from '@/Components/cims/IncidentReportWizard';
+import IncidentReportWizard from '@/Components/cims/IncidentReportWizard';
 import { PublicPageShell, portalPrimaryBtnClass } from '@/Components/cims/PublicUi';
 import { Button } from '@/Components/ui/button';
 import { IconCheck } from '@tabler/icons-react';
-import { useState } from 'react';
-import type { Category } from '@/types/cims';
+import type { Category, Priority } from '@/types/cims';
 
-export default function GuestWizard({ categories }: { categories: Category[] }) {
-    const [form, setForm] = useState<IncidentReportFormData | null>(null);
+interface ReportSubmittedFlash {
+    trackingNumber: string;
+    reference: string;
+    email: string;
+}
 
-    if (form) {
+export default function GuestWizard({
+    categories,
+    priorities,
+}: {
+    categories: Category[];
+    priorities: Priority[];
+}) {
+    const { flash } = usePage<{ flash: { reportSubmitted?: ReportSubmittedFlash } }>().props;
+    const submitted = flash.reportSubmitted;
+
+    if (submitted) {
         return (
             <PublicLayout>
                 <Head title="Report Submitted" />
@@ -21,17 +33,23 @@ export default function GuestWizard({ categories }: { categories: Category[] }) 
                     <h1 className="mt-6 text-2xl font-semibold text-portal-primary">
                         Report Submitted Successfully
                     </h1>
-                    <p className="mt-2 text-portal-on-surface-variant">Your tracking number is:</p>
-                    <p className="mt-2 font-mono text-xl font-bold text-portal-primary">TRK-8F3K2M9P</p>
+                    <p className="mt-2 text-portal-on-surface-variant">Your reference number is:</p>
+                    <p className="mt-2 font-mono text-xl font-bold text-portal-primary">
+                        {submitted.reference}
+                    </p>
+                    <p className="mt-2 text-sm text-portal-on-surface-variant">
+                        Tracking number:{' '}
+                        <span className="font-mono font-medium">{submitted.trackingNumber}</span>
+                    </p>
                     <p className="mt-4 text-sm text-portal-on-surface-variant">
-                        A confirmation email has been sent to {form.email}.
+                        A confirmation email has been sent to {submitted.email}.
                     </p>
                     <div className="mt-8 flex flex-wrap justify-center gap-3">
                         <Button className={portalPrimaryBtnClass} asChild>
-                            <Link href={route('report.track')}>Track Report</Link>
+                            <Link href={route('report.show', submitted.trackingNumber)}>View Report</Link>
                         </Button>
                         <Button variant="outline" className="border-portal-outline-variant" asChild>
-                            <Link href={route('public.home')}>Back to Home</Link>
+                            <Link href={route('report.track')}>Track Another</Link>
                         </Button>
                     </div>
                 </div>
@@ -45,8 +63,8 @@ export default function GuestWizard({ categories }: { categories: Category[] }) 
             <PublicPageShell wide className="max-w-2xl" title="Guest Incident Report">
                 <IncidentReportWizard
                     categories={categories}
+                    priorities={priorities}
                     variant="guest"
-                    onComplete={setForm}
                 />
             </PublicPageShell>
         </PublicLayout>

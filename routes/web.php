@@ -48,6 +48,8 @@ Route::prefix('report')
     ->group(function () {
     Route::get('/choose-type', [ReportController::class, 'chooseType'])->name('choose-type');
     Route::get('/guest', [ReportController::class, 'guestWizard'])->name('guest');
+    Route::post('/guest', [ReportController::class, 'store'])->name('store');
+    Route::get('/geocode/reverse', [ReportController::class, 'reverseGeocode'])->name('geocode');
     Route::get('/track', [ReportController::class, 'track'])->name('track');
     Route::get('/{trackingNumber}', [ReportController::class, 'show'])->name('show');
 });

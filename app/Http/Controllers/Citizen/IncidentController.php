@@ -33,6 +33,7 @@ class IncidentController extends Controller
     {
         return Inertia::render('Citizen/Report/Wizard', [
             'categories' => MockData::categories(),
+            'priorities' => MockData::priorities(),
             'notifications' => MockData::notifications(),
         ]);
     }

@@ -13,7 +13,7 @@ import {
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
 
-export default function Track() {
+export default function Track({ sampleTrackingNumber }: { sampleTrackingNumber?: string | null }) {
     const [trackingNumber, setTrackingNumber] = useState('');
     const [error, setError] = useState('');
 
@@ -58,10 +58,19 @@ export default function Track() {
                         </Button>
                     </form>
                     <p className="mt-4 text-center text-xs text-portal-outline">
-                        Try demo:{' '}
-                        <Link href={route('report.show', 'TRK-8F3K2M9P')} className="font-medium text-portal-tertiary hover:underline">
-                            TRK-8F3K2M9P
-                        </Link>
+                        {sampleTrackingNumber ? (
+                            <>
+                                Try a recent report:{' '}
+                                <Link
+                                    href={route('report.show', sampleTrackingNumber)}
+                                    className="font-medium text-portal-tertiary hover:underline"
+                                >
+                                    {sampleTrackingNumber}
+                                </Link>
+                            </>
+                        ) : (
+                            'Submit a guest report first to get a tracking number.'
+                        )}
                     </p>
                 </PublicCard>
             </PublicPageShell>
