@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'staff' | 'citizen' | 'guest';
+export type UserRole = 'super_admin' | 'admin' | 'staff' | 'citizen' | 'guest';
 
 export interface RoleDefinition {
     slug: UserRole;
@@ -9,10 +9,16 @@ export interface RoleDefinition {
 }
 
 export const ROLES: Record<UserRole, RoleDefinition> = {
+    super_admin: {
+        slug: 'super_admin',
+        label: 'Super Admin',
+        description: 'Platform operator who provisions subscribers and organization admins.',
+        portal: 'Super Admin Console',
+    },
     admin: {
         slug: 'admin',
-        label: 'Administrator',
-        description: 'Full access to manage users, departments, and system settings.',
+        label: 'Organization Admin',
+        description: 'Subscriber administrator for one organization tenant.',
         portal: 'Admin Portal',
     },
     staff: {
@@ -38,6 +44,7 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
 };
 
 export const ROLE_CREATORS: Record<UserRole, UserRole[]> = {
+    super_admin: ['admin'],
     admin: ['staff', 'citizen', 'guest'],
     staff: [],
     citizen: [],
@@ -65,3 +72,5 @@ export function isAdminManagedPublicRole(role: UserRole): boolean {
 }
 
 export const ALL_USER_ROLES = Object.keys(ROLES) as UserRole[];
+
+export const PORTAL_USER_ROLES = ALL_USER_ROLES.filter((r) => r !== 'super_admin');

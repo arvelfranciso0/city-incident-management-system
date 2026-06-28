@@ -49,6 +49,25 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+        $user?->load('organization');
+
+        if ($user && $user->status !== \App\Enums\UserStatus::Active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'This account has been deactivated. Contact support.',
+            ]);
+        }
+
+        if ($user?->organization && ! $user->organization->is_active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'This organization has been suspended. Contact the platform administrator.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

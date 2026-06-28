@@ -3,6 +3,7 @@ import {
     IconCategory,
     IconChartBar,
     IconDashboard,
+    IconLogout,
     IconMap,
     IconSettings,
     IconShield,
@@ -32,6 +33,7 @@ const navItems = [
     },
     { href: route('admin.maps.heatmap'), label: 'City Map', icon: <IconMap className="size-4" />, exact: true },
     { href: route('admin.system.settings'), label: 'Settings', icon: <IconSettings className="size-4" />, exact: true },
+    { href: route('logout'), label: 'Log out', icon: <IconLogout className="size-4" />, method: 'post' as const, exact: true },
 ];
 
 export default function AdminLayout({
@@ -50,7 +52,7 @@ export default function AdminLayout({
             accent="admin"
             userMenuLinks={[
                 { href: route('admin.system.settings'), label: 'Settings' },
-                { href: route('logout'), label: 'Log out' },
+                { href: route('logout'), label: 'Log out', method: 'post' },
             ]}
         >
             {children}

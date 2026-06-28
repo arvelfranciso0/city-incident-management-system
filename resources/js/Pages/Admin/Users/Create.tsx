@@ -5,6 +5,7 @@ import { PageHeader } from '@/Components/cims/PageHeader';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
+import { PasswordInput } from '@/Components/ui/password-input';
 import { Label } from '@/Components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import {
@@ -374,8 +375,7 @@ export default function Create({
                                                     />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Input
-                                                        type="password"
+                                                    <PasswordInput
                                                         placeholder="Min. 8 characters"
                                                         value={row.password}
                                                         onChange={(e) => updateBulkRow(index, 'password', e.target.value)}
@@ -586,9 +586,8 @@ function UserFields({
             </div>
             <div className="space-y-2">
                 <Label htmlFor={`${idPrefix}-password`}>Password</Label>
-                <Input
+                <PasswordInput
                     id={`${idPrefix}-password`}
-                    type="password"
                     placeholder="Min. 8 characters"
                     value={row.password}
                     onChange={(e) => onChange('password', e.target.value)}

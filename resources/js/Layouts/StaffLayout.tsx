@@ -5,6 +5,7 @@ import {
     IconClipboardList,
     IconDashboard,
     IconLayoutKanban,
+    IconLogout,
     IconMap,
     IconSettings,
     IconUser,
@@ -26,6 +27,7 @@ const navItems = [
     { href: route('staff.notifications'), label: 'Notifications', icon: <IconBell className="size-4" />, exact: true },
     { href: route('staff.profile'), label: 'Profile', icon: <IconUser className="size-4" />, exact: true },
     { href: route('staff.settings'), label: 'Settings', icon: <IconSettings className="size-4" />, exact: true },
+    { href: route('logout'), label: 'Log out', icon: <IconLogout className="size-4" />, method: 'post' as const, exact: true },
 ];
 
 export default function StaffLayout({
@@ -46,7 +48,7 @@ export default function StaffLayout({
             userMenuLinks={[
                 { href: route('staff.profile'), label: 'Profile' },
                 { href: route('staff.settings'), label: 'Settings' },
-                { href: route('logout'), label: 'Log out' },
+                { href: route('logout'), label: 'Log out', method: 'post' },
             ]}
         >
             {children}

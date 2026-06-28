@@ -34,7 +34,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        $user = $request->user();
+        $user?->forceFill(['last_login_at' => now()])->save();
+
+        return redirect()->intended(
+            route($user->homeRouteName())
+        );
     }
 
     /**
@@ -50,4 +55,6 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    
 }

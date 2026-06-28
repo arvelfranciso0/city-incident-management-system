@@ -1,6 +1,8 @@
 export interface NavLink {
     href: string;
     label?: string;
+    /** HTTP method for Inertia Link (e.g. POST for logout). */
+    method?: 'get' | 'post';
     /** Match this path and all nested child paths (derived from route URLs, not hardcoded). */
     matchPrefix?: string;
     /** Only highlight on an exact path match — no child routes. */

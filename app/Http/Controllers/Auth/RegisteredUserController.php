@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,12 +42,15 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => UserRole::Citizen,
+            'status' => UserStatus::Active,
+            'joined_at' => now(),
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect()->route($user->homeRouteName());
     }
 }

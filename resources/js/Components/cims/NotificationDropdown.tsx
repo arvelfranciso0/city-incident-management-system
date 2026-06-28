@@ -64,7 +64,7 @@ export function NotificationDropdown({ notifications, viewAllHref }: Notificatio
 interface UserMenuProps {
     name: string;
     email?: string;
-    links: { href: string; label: string }[];
+    links: { href: string; label: string; method?: 'get' | 'post' }[];
 }
 
 export function UserMenu({ name, email, links }: UserMenuProps) {
@@ -92,8 +92,13 @@ export function UserMenu({ name, email, links }: UserMenuProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {links.map((link) => (
-                    <DropdownMenuItem key={link.href}>
-                        <Link href={link.href} className="w-full">
+                    <DropdownMenuItem key={link.href + link.label} asChild={link.method !== 'post'}>
+                        <Link
+                            href={link.href}
+                            method={link.method ?? 'get'}
+                            as={link.method === 'post' ? 'button' : undefined}
+                            className="w-full"
+                        >
                             {link.label}
                         </Link>
                     </DropdownMenuItem>
