@@ -1,9 +1,8 @@
-import { useEffect, FormEventHandler } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+import { useEffect, type FormEventHandler } from 'react';
+import AuthLayout from '@/Layouts/AuthLayout';
+import { AuthField } from '@/Components/cims/AuthForm';
+import { portalPrimaryBtnClass } from '@/Components/cims/PublicUi';
+import { Button } from '@/Components/ui/button';
 import { Head, useForm } from '@inertiajs/react';
 
 export default function ConfirmPassword() {
@@ -12,48 +11,39 @@ export default function ConfirmPassword() {
     });
 
     useEffect(() => {
-        return () => {
-            reset('password');
-        };
-    }, []);
+        return () => reset('password');
+    }, [reset]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-
         post(route('password.confirm'));
     };
 
     return (
-        <GuestLayout>
+        <AuthLayout
+            title="Confirm password"
+            description="This is a secure area. Please confirm your password before continuing."
+        >
             <Head title="Confirm Password" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                This is a secure area of the application. Please confirm your password before continuing.
-            </div>
+            <form onSubmit={submit} className="space-y-5">
+                <AuthField
+                    id="password"
+                    label="Password"
+                    type="password"
+                    value={data.password}
+                    error={errors.password}
+                    autoComplete="current-password"
+                    autoFocus
+                    onChange={(value) => setData('password', value)}
+                />
 
-            <form onSubmit={submit}>
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        isFocused={true}
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="flex items-center justify-end mt-4">
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                <div className="flex justify-end pt-1">
+                    <Button type="submit" disabled={processing} className={portalPrimaryBtnClass}>
                         Confirm
-                    </PrimaryButton>
+                    </Button>
                 </div>
             </form>
-        </GuestLayout>
+        </AuthLayout>
     );
 }
