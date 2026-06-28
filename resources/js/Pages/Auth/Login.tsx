@@ -1,99 +1,97 @@
-import { useEffect, type FormEventHandler } from 'react';
-import AuthLayout from '@/Layouts/AuthLayout';
-import { AuthField, AuthFooterLink, AuthStatus } from '@/Components/cims/AuthForm';
-import { portalPrimaryBtnClass } from '@/Components/cims/PublicUi';
-import { Button } from '@/Components/ui/button';
-import { Label } from '@/Components/ui/label';
+import { useEffect, FormEventHandler } from 'react';
+import Checkbox from '@/Components/Checkbox';
+import GuestLayout from '@/Layouts/GuestLayout';
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { cn } from '@/lib/utils';
 
-export default function Login({
-    status,
-    canResetPassword,
-}: {
-    status?: string;
-    canResetPassword: boolean;
-}) {
+export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
-        remember: false as boolean,
+        remember: false,
     });
 
     useEffect(() => {
-        return () => reset('password');
-    }, [reset]);
+        return () => {
+            reset('password');
+        };
+    }, []);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
         post(route('login'));
     };
 
     return (
-        <AuthLayout
-            title="Sign in"
-            description="Access your citizen portal to track and manage incident reports."
-        >
-            <Head title="Sign in" />
+        <GuestLayout>
+            <Head title="Log in" />
 
-            <form onSubmit={submit} className="space-y-5">
-                {status && <AuthStatus message={status} />}
+            {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
 
-                <AuthField
-                    id="email"
-                    label="Email"
-                    type="email"
-                    value={data.email}
-                    error={errors.email}
-                    autoComplete="username"
-                    autoFocus
-                    onChange={(value) => setData('email', value)}
-                />
+            <form onSubmit={submit}>
+                <div>
+                    <InputLabel htmlFor="email" value="Email" />
 
-                <AuthField
-                    id="password"
-                    label="Password"
-                    type="password"
-                    value={data.password}
-                    error={errors.password}
-                    autoComplete="current-password"
-                    onChange={(value) => setData('password', value)}
-                />
-
-                <div className="flex items-center gap-2">
-                    <input
-                        id="remember"
-                        type="checkbox"
-                        name="remember"
-                        checked={data.remember}
-                        onChange={(e) => setData('remember', e.target.checked)}
-                        className="size-4 rounded border-input text-primary focus:ring-ring/30"
+                    <TextInput
+                        id="email"
+                        type="email"
+                        name="email"
+                        value={data.email}
+                        className="mt-1 block w-full"
+                        autoComplete="username"
+                        isFocused={true}
+                        onChange={(e) => setData('email', e.target.value)}
                     />
-                    <Label htmlFor="remember" className="font-normal text-muted-foreground">
-                        Remember me
-                    </Label>
+
+                    <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
-                    {canResetPassword ? (
-                        <AuthFooterLink href={route('password.request')}>
-                            Forgot password?
-                        </AuthFooterLink>
-                    ) : (
-                        <span />
+                <div className="mt-4">
+                    <InputLabel htmlFor="password" value="Password" />
+
+                    <TextInput
+                        id="password"
+                        type="password"
+                        name="password"
+                        value={data.password}
+                        className="mt-1 block w-full"
+                        autoComplete="current-password"
+                        onChange={(e) => setData('password', e.target.value)}
+                    />
+
+                    <InputError message={errors.password} className="mt-2" />
+                </div>
+
+                <div className="block mt-4">
+                    <label className="flex items-center">
+                        <Checkbox
+                            name="remember"
+                            checked={data.remember}
+                            onChange={(e) => setData('remember', e.target.checked)}
+                        />
+                        <span className="ms-2 text-sm text-gray-600">Remember me</span>
+                    </label>
+                </div>
+
+                <div className="flex items-center justify-end mt-4">
+                    {canResetPassword && (
+                        <Link
+                            href={route('password.request')}
+                            className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Forgot your password?
+                        </Link>
                     )}
-                    <Button type="submit" disabled={processing} className={cn('sm:min-w-28', portalPrimaryBtnClass)}>
-                        Sign in
-                    </Button>
-                </div>
 
-                <p className="text-center text-sm text-muted-foreground">
-                    No account?{' '}
-                    <Link href={route('register')} className="font-medium text-foreground hover:underline">
-                        Create one
-                    </Link>
-                </p>
+                    <PrimaryButton className="ms-4" disabled={processing}>
+                        Log in
+                    </PrimaryButton>
+                </div>
             </form>
-        </AuthLayout>
+        </GuestLayout>
     );
 }
