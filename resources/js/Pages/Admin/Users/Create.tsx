@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/cims/PageHeader';
@@ -44,7 +44,18 @@ import {
 
 interface CreateUserPayload extends BulkUserRow {
     role: UserRole;
-    department: string | null;
+    department_id: string | null;
+}
+
+function toStorePayload(users: CreateUserPayload[]): Array<Record<string, string | number | null>> {
+    return users.map((user) => ({
+        name: user.fullName.trim(),
+        email: user.email.trim(),
+        username: user.username.trim(),
+        password: user.password,
+        role: user.role,
+        department_id: user.department_id ? Number(user.department_id) : null,
+    }));
 }
 
 function validateRow(row: BulkUserRow, index?: number): string | null {
@@ -71,14 +82,18 @@ export default function Create({
     creatableRoles,
     actorRole,
 }: {
-    departments: Department[];
+    departments: Pick<Department, 'id' | 'name'>[];
     creatableRoles: UserRole[];
     actorRole: UserRole;
 }) {
     const defaultRole = (creatableRoles[0] ?? 'staff') as UserRole;
+    const { flash, errors: serverErrors } = usePage<{
+        flash: { success?: string };
+        errors: Record<string, string>;
+    }>().props;
 
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [processing, setProcessing] = useState(false);
 
     const [singleForm, setSingleForm] = useState<BulkUserRow & { role: UserRole; department: string }>({
         ...EMPTY_USER_ROW,
@@ -96,9 +111,10 @@ export default function Create({
     const [importErrors, setImportErrors] = useState<string[]>([]);
     const [importFileName, setImportFileName] = useState<string | null>(null);
 
+    const serverErrorMessages = Object.values(serverErrors ?? {});
+
     function resetMessages() {
         setError(null);
-        setSuccessMessage(null);
     }
 
     function finalizeCreate(users: CreateUserPayload[]) {
@@ -114,6 +130,10 @@ export default function Create({
             const rowError = validateRow(user, index);
             if (rowError) {
                 validationErrors.push(rowError);
+            }
+
+            if (roleRequiresDepartment(user.role) && !user.department_id) {
+                validationErrors.push(`User ${index + 1}: Please select a department for this role.`);
             }
         });
 
@@ -134,19 +154,19 @@ export default function Create({
             return;
         }
 
-        setSuccessMessage(
-            `Successfully created ${users.length} ${users.length === 1 ? 'user' : 'users'} as ${getRoleLabel(users[0].role)}${users[0].department ? ` (${users[0].department})` : ''}.`,
+        router.post(
+            route('admin.users.store'),
+            { users: toStorePayload(users) },
+            {
+                preserveScroll: true,
+                onStart: () => setProcessing(true),
+                onFinish: () => setProcessing(false),
+                onError: () => setError('Please fix the errors below and try again.'),
+            },
         );
     }
 
     function handleSingleCreate() {
-        const departmentName = departments.find((d) => String(d.id) === singleForm.department)?.name ?? null;
-
-        if (roleRequiresDepartment(singleForm.role) && !departmentName) {
-            setError('Please select a department for this role.');
-            return;
-        }
-
         finalizeCreate([
             {
                 email: singleForm.email,
@@ -154,36 +174,22 @@ export default function Create({
                 fullName: singleForm.fullName,
                 password: singleForm.password,
                 role: singleForm.role,
-                department: roleRequiresDepartment(singleForm.role) ? departmentName : null,
+                department_id: roleRequiresDepartment(singleForm.role) ? singleForm.department : null,
             },
         ]);
     }
 
     function handleBulkCreate() {
-        const departmentName = departments.find((d) => String(d.id) === bulkDepartment)?.name ?? null;
-
-        if (roleRequiresDepartment(bulkRole) && !departmentName) {
-            setError('Please select a department for this role.');
-            return;
-        }
-
         finalizeCreate(
             bulkRows.map((row) => ({
                 ...row,
                 role: bulkRole,
-                department: roleRequiresDepartment(bulkRole) ? departmentName : null,
+                department_id: roleRequiresDepartment(bulkRole) ? bulkDepartment : null,
             })),
         );
     }
 
     function handleImportCreate() {
-        const departmentName = departments.find((d) => String(d.id) === importDepartment)?.name ?? null;
-
-        if (roleRequiresDepartment(importRole) && !departmentName) {
-            setError('Please select a department for this role.');
-            return;
-        }
-
         if (importErrors.length > 0) {
             setError('Fix import errors before creating users.');
             return;
@@ -193,7 +199,7 @@ export default function Create({
             importRows.map((row) => ({
                 ...row,
                 role: importRole,
-                department: roleRequiresDepartment(importRole) ? departmentName : null,
+                department_id: roleRequiresDepartment(importRole) ? importDepartment : null,
             })),
         );
     }
@@ -254,12 +260,12 @@ export default function Create({
                 </CardContent>
             </Card>
 
-            {successMessage && (
+            {flash?.success && (
                 <Alert className="mt-6 border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30">
                     <IconCheck className="size-4 text-emerald-600" />
                     <AlertTitle>Users created</AlertTitle>
                     <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
-                        <span>{successMessage}</span>
+                        <span>{flash.success}</span>
                         <Button size="sm" variant="outline" asChild>
                             <Link href={route('admin.users.index')}>View Users</Link>
                         </Button>
@@ -267,10 +273,19 @@ export default function Create({
                 </Alert>
             )}
 
-            {error && (
+            {(error || serverErrorMessages.length > 0) && (
                 <Alert variant="destructive" className="mt-6">
                     <AlertTitle>Could not create users</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertDescription>
+                        {error && <p>{error}</p>}
+                        {serverErrorMessages.length > 0 && (
+                            <ul className={`list-inside list-disc space-y-1 ${error ? 'mt-2' : ''}`}>
+                                {serverErrorMessages.map((msg) => (
+                                    <li key={msg}>{msg}</li>
+                                ))}
+                            </ul>
+                        )}
+                    </AlertDescription>
                 </Alert>
             )}
 
@@ -303,7 +318,9 @@ export default function Create({
                                 idPrefix="single"
                             />
                             <div className="flex gap-2 pt-2">
-                                <Button onClick={handleSingleCreate}>Create User</Button>
+                                <Button type="button" disabled={processing} onClick={handleSingleCreate}>
+                                    {processing ? 'Creating…' : 'Create User'}
+                                </Button>
                                 <Button variant="outline" asChild>
                                     <Link href={route('admin.users.index')}>Cancel</Link>
                                 </Button>
@@ -408,8 +425,8 @@ export default function Create({
                                     <IconPlus className="size-4" />
                                     Add Row
                                 </Button>
-                                <Button onClick={handleBulkCreate}>
-                                    Create {bulkRows.length} Users
+                                <Button type="button" disabled={processing} onClick={handleBulkCreate}>
+                                    {processing ? 'Creating…' : `Create ${bulkRows.length} Users`}
                                 </Button>
                             </div>
                         </CardContent>
@@ -461,11 +478,14 @@ export default function Create({
                                     idPrefix="import"
                                 />
                                 <Button
+                                    type="button"
                                     className="w-full"
-                                    disabled={importRows.length === 0}
+                                    disabled={processing || importRows.length === 0}
                                     onClick={handleImportCreate}
                                 >
-                                    Create {importRows.length > 0 ? importRows.length : ''} Imported Users
+                                    {processing
+                                        ? 'Creating…'
+                                        : `Create ${importRows.length > 0 ? importRows.length : ''} Imported Users`}
                                 </Button>
                             </CardContent>
                         </Card>
@@ -609,7 +629,7 @@ function RoleDepartmentFields({
 }: {
     role: UserRole;
     department: string;
-    departments: Department[];
+    departments: Pick<Department, 'id' | 'name'>[];
     creatableRoles: UserRole[];
     onRoleChange: (role: UserRole) => void;
     onDepartmentChange: (department: string) => void;

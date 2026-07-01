@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default_domain' => env('TENANT_DEFAULT_DOMAIN', env('PLATFORM_DOMAIN', 'cims.test')),
+    'default_domain' => env('TENANT_DEFAULT_DOMAIN', env('PLATFORM_DOMAIN', 'city-incident-management-system.test')),
 
     /*
     |--------------------------------------------------------------------------
@@ -30,7 +30,7 @@ return [
 
     'central_hosts' => array_values(array_filter(array_map(
         'trim',
-        explode(',', env('CENTRAL_HOSTS', 'localhost,127.0.0.1,cims.test,www.cims.test'))
+        explode(',', env('CENTRAL_HOSTS', 'localhost,127.0.0.1,cims.test,www.cims.test,localtest.me'))
     ))),
 
     /*

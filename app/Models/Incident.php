@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Incident extends Model
 {
-    use BelongsToOrganization, HasFactory;
+    use BelongsToOrganization, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'organization_id',

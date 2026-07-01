@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/cims/PageHeader';
 import { SearchFilters } from '@/Components/cims/SearchFilters';
@@ -9,17 +9,25 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card } from '@/Components/ui/card';
 import { useState } from 'react';
 import { PORTAL_USER_ROLES, getRoleLabel, isAdminManagedPublicRole, type UserRole } from '@/lib/roles';
-import type { CimsUser } from '@/types/cims';
+import type { CimsUser, Paginated } from '@/types/cims';
 
-export default function Index({ users }: { users: CimsUser[] }) {
+export default function Index({ users }: { users: Paginated<CimsUser> }) {
     const [search, setSearch] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
 
-    const filtered = users.filter((u) => {
+    const filtered = users.data.filter((u) => {
         const matchesSearch = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
         const matchesRole = !roleFilter || roleFilter === 'all' || u.role === roleFilter;
         return matchesSearch && matchesRole;
     });
+
+    function goToPage(page: number) {
+        router.get(
+            route('admin.users.index'),
+            { page },
+            { preserveState: true, preserveScroll: true },
+        );
+    }
 
     return (
         <AdminLayout>
@@ -38,7 +46,7 @@ export default function Index({ users }: { users: CimsUser[] }) {
                 filters={[{
                     key: 'role',
                     label: 'Role',
-                    options: PORTAL_USER_ROLES.filter((r) => r !== 'super_admin').map((r) => ({ value: r, label: getRoleLabel(r) })),
+                    options: PORTAL_USER_ROLES.map((r) => ({ value: r, label: getRoleLabel(r) })),
                 }]}
                 className="mt-6"
             />
@@ -75,7 +83,15 @@ export default function Index({ users }: { users: CimsUser[] }) {
                     </Table>
                 </div>
             </Card>
-            <div className="mt-4 flex justify-center"><PaginationControls /></div>
+            {users.last_page > 1 && (
+                <div className="mt-4 flex justify-center">
+                    <PaginationControls
+                        currentPage={users.current_page}
+                        totalPages={users.last_page}
+                        onPageChange={goToPage}
+                    />
+                </div>
+            )}
         </AdminLayout>
     );
 }

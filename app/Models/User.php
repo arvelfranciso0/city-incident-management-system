@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use App\Enums\Permission;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use BelongsToOrganization, HasApiTokens, HasFactory, Notifiable;
+    use BelongsToOrganization, HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'organization_id',
@@ -98,6 +100,11 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class);
+    }
+
     public function homeRouteName(): string
     {
         return $this->role?->homeRoute() ?? 'public.home';
@@ -106,5 +113,16 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->role === UserRole::SuperAdmin;
+    }
+
+    public function hasPermission(Permission ...$permissions): bool
+    {
+        if ($this->role === UserRole::SuperAdmin) {
+            return true;
+        }
+        return count(array_intersect(
+            $this->role->permissions(),
+            $permissions
+        )) > 0;
     }
 }

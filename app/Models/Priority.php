@@ -6,10 +6,11 @@ use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Priority extends Model
 {
-    use BelongsToOrganization, HasFactory;
+    use BelongsToOrganization, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'organization_id',

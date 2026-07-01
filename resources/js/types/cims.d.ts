@@ -39,6 +39,16 @@ export interface Notification {
 
 export type UserRole = 'super_admin' | 'admin' | 'staff' | 'citizen' | 'guest';
 
+export interface Paginated<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+}
+
 export interface CimsUser {
     id: number;
     name: string;
@@ -106,7 +116,7 @@ export interface ActivityLog {
     id: number;
     type: string;
     description: string;
-    timestamp: string;
+    created_at: string;
 }
 
 export interface Role {
@@ -121,11 +131,29 @@ export interface Role {
     adminManaged?: boolean;
 }
 
-export interface ChartData {
-    labels: string[];
-    incidents: number[];
-    resolved: number[];
-}
+type Month =
+  | "Jan"
+  | "Feb"
+  | "Mar"
+  | "Apr"
+  | "May"
+  | "Jun"
+  | "Jul"
+  | "Aug"
+  | "Sep"
+  | "Oct"
+  | "Nov"
+  | "Dec";
+
+export type ChartData = Partial<
+  Record<
+    Month,
+    {
+      incidents: number;
+      resolved: number;
+    }
+  >
+>;
 
 export interface PlatformAdminUser {
     id: number;

@@ -62,7 +62,7 @@ Route::prefix('report')
 
 Route::prefix('platform')
     ->name('platform.')
-    ->middleware(['auth', 'role:'.UserRole::SuperAdmin->value])
+    ->middleware(['auth','resolve.tenant', 'role:'.UserRole::SuperAdmin->value])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/analytics', [PlatformAnalyticsController::class, 'index'])->name('analytics');
@@ -126,13 +126,15 @@ Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:'.UserRole::St
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:'.UserRole::Admin->value])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'resolve.tenant','role:'.UserRole::Admin->value])->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
     Route::get('/users/{id}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
     Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('users.show');
+    Route::patch('/users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('users.deactivate');
 
     Route::get('/departments', [AdminDepartmentController::class, 'index'])->name('departments.index');
     Route::get('/departments/{id}', [AdminDepartmentController::class, 'show'])->name('departments.show');

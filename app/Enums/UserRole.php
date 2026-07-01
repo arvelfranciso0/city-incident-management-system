@@ -31,4 +31,42 @@ enum UserRole: string
             self::Guest => 'public.home',
         };
     }
+
+    /**
+     * @return list<string>
+     */
+    public function grantedPermissions(): array
+    {
+        return match ($this) {
+            self::SuperAdmin => [
+                Permission::OrganizationsManage,
+                Permission::PlatformAdmins,
+                Permission::PlatformAnalytics,
+                Permission::PlatformSettings
+            ],
+            self::Admin => [
+                Permission::UsersManage,
+                Permission::DepartmentsManage,
+                Permission::ReportsView,
+                Permission::SystemSettings,
+                Permission::IncidentsManage,
+                Permission::OrganizationView
+                
+            ],
+            self::Staff => [
+                Permission::IncidentsManage,
+                Permission::NotesCreate,
+                Permission::ResolutionUpload
+            ],
+            self::Citizen => [
+                Permission::IncidentsReport,
+                Permission::IncidentsViewOwn,
+                Permission::IncidentUpdate
+            ],
+            self::Guest => [
+                Permission::IncidentsReportGuest,
+                Permission::IncidentsViewOwn
+            ],
+        };
+    }
 }

@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role' => \App\Http\Middleware\EnsureRole::class,
         'organization.host' => \App\Http\Middleware\SetOrganizationFromHost::class,
+        'resolve.tenant' => \App\Http\Middleware\ResolveTenant::class,
     ];
 }

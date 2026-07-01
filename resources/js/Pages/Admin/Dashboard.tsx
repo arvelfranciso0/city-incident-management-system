@@ -34,15 +34,22 @@ export default function Dashboard({
     departments,
     recentIncidents,
     activityLogs,
+    slaAlert,
+    slaTargetPercent,
 }: {
     stats: StatCard[];
     chartData: ChartData;
     departments: Department[];
     recentIncidents: Incident[];
     activityLogs: ActivityLog[];
+    slaAlert: string | null;
+    slaTargetPercent: number;
 }) {
     const maxOpen = Math.max(...departments.map((d) => d.openIncidents), 1);
-    const slaCompliance = 91;
+    const slaCompliance = parseInt(
+        stats.find((stat) => stat.label === 'SLA Compliance')?.value ?? '0',
+        10,
+    );
 
     return (
         <AdminLayout>
@@ -89,25 +96,25 @@ export default function Dashboard({
                 </div>
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base">SLA Compliance</CardTitle>
-                        <CardDescription>Target: 95% city-wide</CardDescription>
+                        <CardTitle className="text-base" title='Service Level Agreement'>SLA Compliance</CardTitle>
+                        <CardDescription>Target: {slaTargetPercent}% city-wide</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-end justify-between">
                             <span className="text-3xl font-bold tabular-nums">{slaCompliance}%</span>
-                            <Badge variant={slaCompliance >= 95 ? 'default' : 'secondary'} className="mb-1">
-                                {slaCompliance >= 95 ? 'On target' : 'Below target'}
+                            <Badge variant={slaCompliance >= slaTargetPercent ? 'default' : 'secondary'} className="mb-1">
+                                {slaCompliance >= slaTargetPercent ? 'On target' : 'Below target'}
                             </Badge>
                         </div>
                         <Progress value={slaCompliance} className="h-2.5" />
-                        <div className="rounded-lg border border-amber-200/60 bg-amber-50/50 p-3 dark:border-amber-900/40 dark:bg-amber-950/20">
-                            <div className="flex gap-2">
-                                <IconAlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                                <p className="text-xs text-muted-foreground">
-                                    Electrical Services and Parks & Recreation are trending below SLA this month.
-                                </p>
+                        {slaAlert && (
+                            <div className="rounded-lg border border-amber-200/60 bg-amber-50/50 p-3 dark:border-amber-900/40 dark:bg-amber-950/20">
+                                <div className="flex gap-2">
+                                    <IconAlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                                    <p className="text-xs text-muted-foreground">{slaAlert}</p>
+                                </div>
                             </div>
-                        </div>
+                        )}
                         <Button variant="outline" size="sm" className="w-full" asChild>
                             <Link href={route('admin.reports.sla')}>Open SLA Dashboard</Link>
                         </Button>
@@ -186,7 +193,7 @@ export default function Dashboard({
                                 <div className="min-w-0">
                                     <p className="truncate text-sm font-medium">{inc.title}</p>
                                     <p className="truncate text-xs text-muted-foreground">
-                                        {inc.id} · {inc.department}
+                                        {inc.department}
                                     </p>
                                 </div>
                                 <StatusBadge status={inc.status} />
@@ -212,7 +219,7 @@ export default function Dashboard({
                                 <div className="min-w-0 flex-1">
                                     <p className="text-sm">{log.description}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        {new Date(log.timestamp).toLocaleString()}
+                                        {new Date(log.created_at).toLocaleString()}
                                     </p>
                                 </div>
                             </div>

@@ -2,7 +2,9 @@
 
 namespace App\Services\Tenant;
 
+use App\Enums\UserRole;
 use App\Models\Organization;
+use App\Support\HostHelper;
 use Illuminate\Http\Request;
 
 class OrganizationHostResolver
@@ -10,8 +12,10 @@ class OrganizationHostResolver
     public function resolveFromRequest(Request $request): ?Organization
     {
         $host = strtolower($request->getHost());
+        
+        $domain = HostHelper::getDomain($host);
 
-        if ($this->isCentralHost($host)) {
+        if ($this->isCentralHost($domain)) {
             return $this->resolveFromQueryPreview($request);
         }
 
@@ -80,5 +84,25 @@ class OrganizationHostResolver
                     ->orWhere('subdomain', $value);
             })
             ->first();
+    }
+
+    public function resolveTenantHost(Request $request):bool
+    {
+        $host = strtolower($request->getHost());
+        $subDomain = HostHelper::getSubdomain($host);
+        $domain = HostHelper::getDomain($host);
+        $user = auth()->user();
+
+        $organizationData = $user->organization()->first();
+
+        if($user->role === UserRole::SuperAdmin && $domain === config('tenant.default_domain')){
+            return True;
+        }
+
+        if(!$subDomain){
+            abort(404, "Not Found");
+        }
+        
+        return $organizationData->subdomain === $subDomain;
     }
 }
