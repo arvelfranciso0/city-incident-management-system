@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
+use App\Models\Organization;
 use App\Services\Admin\DashboardStatsService;
 use App\Support\ChartHelper;
 use Inertia\Inertia;
@@ -17,7 +19,11 @@ class DashboardController extends Controller
 
     public function index(): Response
     {
+
         $organization = auth()->user()->organization;
+
+        $this->authorize('view', $organization);
+
         $organizationId = $organization->id;
         $organization->load([
             'departments' => fn ($query) => $query

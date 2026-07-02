@@ -8,6 +8,7 @@ enum Permission:string
     case DepartmentsManage = 'departments.manage';
     case ReportsView = 'reports.view';
     case SystemSettings = 'system.settings';
+    case DepartmentView = 'departments.view';
 
     case IncidentsManage = 'incidents.manage';
     case NotesCreate = 'notes.create';

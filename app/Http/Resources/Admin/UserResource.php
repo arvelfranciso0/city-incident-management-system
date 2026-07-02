@@ -32,7 +32,8 @@ class UserResource extends JsonResource
             'bio' => $this->bio,
             'incidentsHandled' => $this->incidentsHandled ?? $this->assignedIncidents ?? 0,
             'incidentsReported' => $this->incidentsReported ?? $this->reported_incidents_count ?? 0,
-            'permissions' => $this->role?->permissions() ?? [],
+            'permissions' => $this->role?->grantedPermissions() ?? [],
+            'department_id' => $this->department_id
         ];
     }
 }

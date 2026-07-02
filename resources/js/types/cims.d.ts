@@ -53,8 +53,9 @@ export interface CimsUser {
     id: number;
     name: string;
     email: string;
-    role: UserRole | string;
+    role: UserRole;
     department: string | null;
+    department_id: number | null
     status: string;
     lastLogin: string;
     phone?: string;

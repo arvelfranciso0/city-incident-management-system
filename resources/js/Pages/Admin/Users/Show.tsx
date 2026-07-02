@@ -28,6 +28,8 @@ import {
     isAdminManagedPublicRole,
     type UserRole,
 } from "@/lib/roles";
+import { UserStatus } from "@/enums/UserStatus";
+import ResetUserPasswordDialog from "@/Components/cims/ResetUserPasswordDialog";
 
 function initials(name: string) {
     return name
@@ -42,12 +44,37 @@ function roleLabel(role: string) {
     return getRoleLabel(role);
 }
 
-export default function Show({ user }: { user: CimsUser }) {
+interface Props {
+    user: {
+        data: CimsUser;
+    };
+}
+
+export default function Show({ user: userData }: Props) {
+    const user = userData.data;
     const handleDeactivateUser = () => {
         if (!confirm(`Deactivate ${user.name}?`)) return;
 
         router.patch(
             route("admin.users.deactivate", user.id),
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    console.log("Success");
+                },
+                onError: () => {
+                    console.log("Something went wrong");
+                },
+            },
+        );
+    };
+
+    const handleActivateUser = () => {
+        if (!confirm(`Activate ${user.name}?`)) return;
+
+        router.patch(
+            route("admin.users.activate", user.id),
             {},
             {
                 preserveScroll: true,
@@ -276,7 +303,7 @@ export default function Show({ user }: { user: CimsUser }) {
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 Role
                             </p>
-                            <p className="mt-1 capitalize">{user.role}</p>
+                            <p className="mt-1 capitalize">{getRoleLabel(user.role)}</p>
                         </div>
                         <div>
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -292,16 +319,27 @@ export default function Show({ user }: { user: CimsUser }) {
                                 Edit Profile
                             </Link>
                         </Button>
-                        <Button variant="outline" size="sm">
-                            Reset Password
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleDeactivateUser}
-                        >
-                            Deactivate Account
-                        </Button>
+                        <ResetUserPasswordDialog user={user}/>
+                        
+                        {user.status === UserStatus.Active ? (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleDeactivateUser}
+                            >
+                                Deactivate Account
+                            </Button>
+                        ) : (
+                            user.status === UserStatus.Inactive && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleActivateUser}
+                                >
+                                    Set Active Account
+                                </Button>
+                            )
+                        )}
                     </div>
                 </CardContent>
             </Card>

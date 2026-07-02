@@ -1,4 +1,4 @@
-export type UserRole = 'super_admin' | 'admin' | 'staff' | 'citizen' | 'guest';
+export type UserRole = 'super_admin' | 'admin' | 'staff' | 'citizen' | 'guest' | 'department_head';
 
 export interface RoleDefinition {
     slug: UserRole;
@@ -41,6 +41,12 @@ export const ROLES: Record<UserRole, RoleDefinition> = {
         portal: 'Public Portal',
         adminManaged: true,
     },
+    department_head: {
+        slug: 'department_head',
+        label: 'Department Head',
+        description: 'Head of the department',
+        portal: 'Admin Portal',
+    },
 };
 
 export const ROLE_CREATORS: Record<UserRole, UserRole[]> = {
@@ -49,6 +55,7 @@ export const ROLE_CREATORS: Record<UserRole, UserRole[]> = {
     staff: [],
     citizen: [],
     guest: [],
+    department_head: ['staff', 'citizen', 'guest']
 };
 
 export function getRoleLabel(role: string): string {

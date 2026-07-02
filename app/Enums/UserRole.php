@@ -8,6 +8,7 @@ enum UserRole: string
     case Admin = 'admin';
     case Staff = 'staff';
     case Citizen = 'citizen';
+    case DepartmentHead = 'department_head';
     case Guest = 'guest';
 
     public function label(): string
@@ -53,6 +54,14 @@ enum UserRole: string
                 Permission::OrganizationView
                 
             ],
+            self::DepartmentHead => [
+                Permission::UsersManage,
+                Permission::DepartmentView,
+                Permission::ReportsView,
+                Permission::SystemSettings,
+                Permission::IncidentsManage,
+            ],
+
             self::Staff => [
                 Permission::IncidentsManage,
                 Permission::NotesCreate,
@@ -67,6 +76,22 @@ enum UserRole: string
                 Permission::IncidentsReportGuest,
                 Permission::IncidentsViewOwn
             ],
+        };
+    }
+
+    public function assignableRoles(): array
+    {
+        return match ($this) {
+            self::SuperAdmin => [
+                self::SuperAdmin,
+                self::Admin,
+                self::Staff,
+            ],
+            self::Admin => [
+                self::Staff,
+                self::Admin,
+            ],
+            self::Staff => [],
         };
     }
 }

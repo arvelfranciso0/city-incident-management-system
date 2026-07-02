@@ -318,7 +318,7 @@ export default function Create({
                                 idPrefix="single"
                             />
                             <div className="flex gap-2 pt-2">
-                                <Button type="button" disabled={processing} onClick={handleSingleCreate}>
+                                <Button type="button" disabled={processing  } onClick={handleSingleCreate}>
                                     {processing ? 'Creating…' : 'Create User'}
                                 </Button>
                                 <Button variant="outline" asChild>

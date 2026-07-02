@@ -20,8 +20,12 @@ class IncidentPolicy extends BasePolicy
      * Determine whether the user can view the model.
      */
     public function view(User $user, Incident $incident): bool
-    {
-        return $user->hasPermission(Permission::IncidentsReportGuest, Permission::IncidentsViewOwn, Permission::IncidentsManage);
+    {   
+        if($incident->is_guest_report){
+            return true;
+        }
+
+        return $user->organization_id === $incident->organization_id && $user->hasPermission(Permission::IncidentsManage);
     }
 
     /**

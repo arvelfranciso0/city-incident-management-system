@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/cims/PageHeader';
 import { StatusBadge } from '@/Components/cims/StatusBadge';
@@ -6,11 +6,35 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { IconChevronRight } from '@tabler/icons-react';
 import type { Department, Incident } from '@/types/cims';
+import { Button } from "@/Components/ui/button";
 
-export default function Show({ department, incidents }: { department: Department; incidents: Incident[] }) {
+interface ShowProps{
+    departmentData :{
+        data: DepartmentIncidents
+    }
+}
+
+interface DepartmentIncidents extends Department {
+    incidents: Incident[]
+}
+export default function Show({departmentData}: ShowProps) {
+    const department = departmentData.data
+
     return (
         <AdminLayout>
             <Head title={department.name} />
+            <div className="mb-2">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="-ml-2 text-muted-foreground"
+                >
+                    <Link href={route("admin.departments.index")}>
+                        ← Back to Departments
+                    </Link>
+                </Button>
+            </div>
             <PageHeader title={department.name} description={`Department head: ${department.head}`} />
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
                 {[{ l: 'Staff', v: department.staffCount }, { l: 'Open Incidents', v: department.openIncidents }, { l: 'Avg Resolution', v: `${department.avgResolutionDays} days` }].map((s) => (
@@ -30,14 +54,14 @@ export default function Show({ department, incidents }: { department: Department
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {incidents.length === 0 ? (
+                            {department.incidents.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
                                         No incidents for this department.
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                incidents.map((inc) => (
+                                department.incidents.map((inc) => (
                                     <TableRow
                                         key={inc.id}
                                         className="group cursor-pointer hover:bg-muted/50"

@@ -5,7 +5,13 @@ import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
 import type { Department } from '@/types/cims';
 
-export default function Index({ departments }: { departments: Department[] }) {
+interface DepartmentProps{
+    departments: {
+        data:  Department[]
+    }
+}
+export default function Index({ departments: departmentsData }: DepartmentProps) {
+    const departments = departmentsData.data
     return (
         <AdminLayout>
             <Head title="Departments" />

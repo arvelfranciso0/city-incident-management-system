@@ -6,12 +6,18 @@ use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateUser;
+use App\Http\Requests\Admin\UpdateUserPassword;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Resources\Admin\UserResource;
+use App\Models\Department;
 use App\Models\Staff;
 use App\Models\User;
 use App\Support\MockData;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,6 +25,9 @@ class UserController extends Controller
 {
     public function index(): Response
     {
+        
+        $this->authorize('viewAny', User::class);
+
         $organization = auth()->user()->organization;
         
         $users = User::forOrganization($organization)
@@ -54,9 +63,11 @@ class UserController extends Controller
                 'assignedIncidents as incidentsHandled',
             ])
             ->findOrFail($id);
+        
+        $this->authorize('view', $user);
 
         return Inertia::render('Admin/Users/Show', [
-            'user' => UserResource::make($user)->resolve(),
+            'user' => new UserResource($user),
         ]);
     }
 
@@ -73,17 +84,25 @@ class UserController extends Controller
 
     public function edit(int $id): Response
     {
-        $user = collect(MockData::users())->firstWhere('id', $id)
-            ?? MockData::users()[0];
+        $organizationId = auth()->user()->organization->id;
+        $assignableRoles = auth()->user()->role->assignableRoles();
+        $user = User::with('department')->find($id);
+        $deparments = Department::select('id', 'name')->where('organization_id', $organizationId)->get();
+
+        $this->authorize('view', $user);
 
         return Inertia::render('Admin/Users/Edit', [
-            'user' => $user,
-            'departments' => MockData::departments(),
+            'user' => new UserResource($user),
+            'departments' => $deparments,
+            'assignableRoles' => $assignableRoles
         ]);
     }
 
     public function store(CreateUser $request): RedirectResponse
     {
+        $this->authorize('create', User::class);
+        $this->authorize('create', Staff::class);
+
         $organization = auth()->user()->organization;
         $validated = $request->validated();
 
@@ -127,8 +146,43 @@ class UserController extends Controller
 
     public function deactivate(User $user)
     {
+        $this->authorize('update', $user);
+        
         $user->update(['status' => UserStatus::Inactive]);
 
         return back()->with('success', 'User deactivated.');
+    }
+
+    public function activate(User $user)
+    {
+        $this->authorize('update', $user);
+        
+        $user->update(['status' => UserStatus::Active]);
+
+        return back()->with('success', 'User activated.');
+    }
+
+    public function update(UpdateUserRequest $request, User $user)
+    {
+        $this->authorize('update', $user);
+
+        $validated = $request->validated();
+
+        $user->update($validated);
+
+        return back()->with('success', 'Updated successfully');
+    }
+
+    public function updatePassword(UpdateUserPassword $request, User $user)
+    {
+        $this->authorize('update', $user);
+
+        $validated = $request->validated();
+
+        $user->update([
+        'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('success', 'Updated successfully');
     }
 }

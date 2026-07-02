@@ -91,4 +91,8 @@ class Department extends Model
                 'avgResolutionDays' => static::avgResolutionDaysSubquery(),
             ]);
     }
+    public function scopeWithStaffCount(Builder $query): Builder
+    {
+        return $query->withCount(['staff as staffCount']);
+    }
 }

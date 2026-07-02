@@ -120,9 +120,15 @@ class User extends Authenticatable
         if ($this->role === UserRole::SuperAdmin) {
             return true;
         }
-        return count(array_intersect(
-            $this->role->permissions(),
-            $permissions
-        )) > 0;
+
+        $granted = $this->role->grantedPermissions();
+
+        foreach ($permissions as $permission) {
+            if (in_array($permission, $granted, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

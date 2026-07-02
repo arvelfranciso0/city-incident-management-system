@@ -21,7 +21,7 @@ class DepartmentPolicy extends BasePolicy
      */
     public function view(User $user, Department $department): bool
     {
-        return $user->hasPermission(Permission::DepartmentsManage);
+        return $user->organization_id === $department->organization_id && $user->hasPermission(Permission::DepartmentsManage);
     }
 
     /**

@@ -20,7 +20,7 @@ class UserPolicy extends BasePolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->hasPermission(Permission::UsersManage);
+        return $user->organization_id === $model->organization_id && $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -36,7 +36,7 @@ class UserPolicy extends BasePolicy
      */
     public function update(User $user, User $model): bool
     {
-        return $user->hasPermission(Permission::UsersManage);
+        return $user->organization_id === $model->organization_id && $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -44,7 +44,7 @@ class UserPolicy extends BasePolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->hasPermission(Permission::UsersManage);
+        return $user->organization_id === $model->organization_id && $user->id !== $model->id && $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -52,7 +52,7 @@ class UserPolicy extends BasePolicy
      */
     public function restore(User $user, User $model): bool
     {
-        return $user->hasPermission(Permission::UsersManage);
+        return $user->organization_id === $model->organization_id && $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -60,6 +60,6 @@ class UserPolicy extends BasePolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
-        return $user->hasPermission(Permission::UsersManage);
+        return $user->organization_id === $model->organization_id && $user->hasPermission(Permission::UsersManage);
     }
 }

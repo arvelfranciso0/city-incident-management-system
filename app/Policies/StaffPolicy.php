@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Permission;
 use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -13,7 +14,7 @@ class StaffPolicy extends BasePolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -21,7 +22,7 @@ class StaffPolicy extends BasePolicy
      */
     public function view(User $user, Staff $staff): bool
     {
-        //
+        return $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -29,7 +30,7 @@ class StaffPolicy extends BasePolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -37,7 +38,7 @@ class StaffPolicy extends BasePolicy
      */
     public function update(User $user, Staff $staff): bool
     {
-        //
+        return $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -45,7 +46,7 @@ class StaffPolicy extends BasePolicy
      */
     public function delete(User $user, Staff $staff): bool
     {
-        //
+        return $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -53,7 +54,7 @@ class StaffPolicy extends BasePolicy
      */
     public function restore(User $user, Staff $staff): bool
     {
-        //
+        return $user->hasPermission(Permission::UsersManage);
     }
 
     /**
@@ -61,6 +62,6 @@ class StaffPolicy extends BasePolicy
      */
     public function forceDelete(User $user, Staff $staff): bool
     {
-        //
+        return $user->hasPermission(Permission::UsersManage);
     }
 }

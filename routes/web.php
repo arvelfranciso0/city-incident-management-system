@@ -135,6 +135,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'resolve.tenant','ro
     Route::get('/users/{id}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
     Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('users.show');
     Route::patch('/users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('users.deactivate');
+    Route::patch('/users/{user}/activate', [AdminUserController::class, 'activate'])->name('users.activate');
+    Route::patch('/users/{user}/update', [AdminUserController::class, 'update'])->name('users.update');
+    Route::patch('/users/{user}/password', [AdminUserController::class, 'updatePassword'])->name('users.password');
 
     Route::get('/departments', [AdminDepartmentController::class, 'index'])->name('departments.index');
     Route::get('/departments/{id}', [AdminDepartmentController::class, 'show'])->name('departments.show');
